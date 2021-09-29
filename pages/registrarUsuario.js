@@ -36,12 +36,13 @@ export default function RegistrarUsuario({data,err}){
         e.preventDefault();
         const url=`/user/createUser`;
         methodPost(url,form);
-        router.push("/login");
+        //router.push("/login");
     }
     return(
         <Layout>
             <section>
                 <h2>Registrar usuario</h2>
+                <p>{res}</p>
                 <form onSubmit={sendForm}>
                     <input onChange={handleChange} name="us_login" value={form.us_login} placeholder="Login" type="text"/>
                     <input onChange={handleChange} name="us_pass" value={form.us_pass} placeholder="Password" type="password"/>
