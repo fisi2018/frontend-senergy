@@ -31,13 +31,14 @@ export default function RegistrarUsuario({data,err}){
     console.log("client side",API);
     const {form,handleChange}=useForm(initialForm);
     const {res,methodPost}=useMethod(initialMethod);
-    //const router= useRouter();
+    const router= useRouter();
     const sendForm=(e)=>{
         e.preventDefault();
         const url=`/user/createUser`;
         methodPost(url,form);
-        //router.push("/login");
+        router.push("/login");
     }
+    console.log(res);
     return(
         <Layout>
             <section>
