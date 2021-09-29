@@ -28,6 +28,7 @@ const initialMethod={
     response:""
 }
 export default function RegistrarUsuario({data,err}){
+    console.log("client side",API);
     const {form,handleChange}=useForm(initialForm);
     const {res,methodPost}=useMethod(initialMethod);
     const router= useRouter();
@@ -44,7 +45,7 @@ export default function RegistrarUsuario({data,err}){
                 <form onSubmit={sendForm}>
                     <input onChange={handleChange} name="us_login" value={form.us_login} placeholder="Login" type="text"/>
                     <input onChange={handleChange} name="us_pass" value={form.us_pass} placeholder="Password" type="password"/>
-                    <select onChange={handleChange} name="tipo_usuario_tu_id" id=""  defaultValue={0} >
+                    <select onChange={handleChange} name="tipo_usuario_tu_id"  defaultValue={0} >
                         <option  value={0}>-Seleccionar tipo de usuario-</option>
                         {data.tiposUsuario.map(tipo=>(
                             <option key={tipo.tu_id} value={tipo.tu_id}>{tipo.tu_nombre}</option>
@@ -54,7 +55,7 @@ export default function RegistrarUsuario({data,err}){
                     <input onChange={handleChange} name="us_apellidos" value={form.us_apellidos} placeholder="Apellidos" type="text"/>
                     <input onChange={handleChange} name="us_razon_social" value={form.us_razon_social} placeholder="Razón social" type="text"/>
                     <input onChange={handleChange} name="us_tipopersonaempresa" value={form.us_tipopersonaempresa} placeholder="Tipo persona empresa" type="text"/>
-                    <select defaultValue={0} onChange={handleChange} name="tipo_identificacion_ti_id" id="">
+                    <select defaultValue={0} onChange={handleChange} name="tipo_identificacion_ti_id" >
                         <option  value={0}>-Seleccionar tipo de identificación-</option>
                         {data.tiposIdetificacion.map(tipo=>(
                             <option key={tipo.ti_id} value={tipo.ti_id}>{tipo.ti_nombre} - {tipo.tb_abreviatura}</option>
@@ -66,7 +67,7 @@ export default function RegistrarUsuario({data,err}){
                     <input onChange={handleChange} name="us_correo" value={form.us_correo} placeholder="Correo" type="text"/>
                     <input onChange={handleChange} name="us_direccion" value={form.us_direccion} placeholder="Direccion" type="text"/>
                     <input onChange={handleChange} name="us_telefono" value={form.us_telefono} placeholder="Telefono" type="text"/>
-                    <select defaultValue={0} onChange={handleChange} name="rol_usuario_rol_id" id="">
+                    <select defaultValue={0} onChange={handleChange} name="rol_usuario_rol_id" >
                         <option  value={0}>-Seleccionar rol del usuario-</option>
                         {data.rolesUsuario.map(rol=>(
                             <option key={rol.rol_id} value={rol.rol_id}>{rol.rol_nombre}</option>
