@@ -22,6 +22,9 @@ export default function Header(){
             {login.empresa?
             <></>
             :
+            login.user.li_id!==0?
+            <></>
+            :
             <Link href="/crearLicitacion">
             <a>Crear licitacion</a>
             </Link>
