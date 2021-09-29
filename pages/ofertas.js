@@ -280,6 +280,7 @@ const closeChart=(id,name)=>{
             button{
                 background-color:black;
                 color:white;
+                border-radius:0.2rem;
                 padding:0.5rem 1rem;
                 margin:0.5rem 0;
             }

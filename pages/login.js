@@ -61,7 +61,7 @@ export default function Login(){
             <form onSubmit={initLogin}>
                 <article>
                 <span className="container-first-icon" >
-                    <FontAwesomeIcon color="white" icon={faUser} />
+                    <FontAwesomeIcon size="2x" color="white" icon={faUser} />
                 </span>
                 </article>
                 <h2>Sección de login para usuarios</h2>
