@@ -110,7 +110,7 @@ export default function RegistrarUsuario({data,err}){
 }
 export async function getServerSideProps(){
     try{
-
+        console.log("API",API);
         const responseTipoUsuario= await axios.get(`${API}/user/tipo_usuario`);
         const tiposUsuario=await responseTipoUsuario.data;
         const responseRolUsuario= await axios.get(`${API}/user/rol_usuario`);
