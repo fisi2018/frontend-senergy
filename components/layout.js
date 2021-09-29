@@ -1,20 +1,19 @@
+import Footer from "./footer";
 import Header from "./header";
 export default function Layout({children}){
     return(
-        <div>
+        <div className="block-document-all" >
             <Header/>
             <main>
                 {children}
             </main>
-
+            <Footer/>
             <style jsx global>{`
-            
-
                 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600;700;800;900&display=swap');
                 *{
                     font-family:"Nunito",sans-serif;
                 }
-                .container-all{
+                .block-document-all{
                     display:flex;
                     flex-direction:column;
                     width:100%;

@@ -1,18 +1,29 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Layout from "../components/layout";
 import { useMethod } from "../hooks/useMethod";
 import { API } from "../tools/api";
+import { useLoginContext } from "../tools/contexts/LoginContext";
 var Highcharts=require("highcharts");
 
 const initialMethod={
     message:"",
     response:[]
 }
-const idLicitacion=367898023;
- const url2=`propuesta/propEco/${idLicitacion}`;
 export default function Ofertas(){
+   const{login}= useLoginContext();
    const{res,methodGet,methodGetReturn}= useMethod(initialMethod);
-   
+   const [button,setButton]=useState({
+       preciosMonomicos:false,
+       preciosPotencia:false,
+       preciosEnergia:false,
+       factorActPot:false,
+       factorActEner:false
+   });
+   const getFormatDate=(date)=>{
+        const newDate=new Date(date);
+        const fechaFormat=newDate.toLocaleDateString();
+        return fechaFormat;
+   }
    const monomicoCalc=(pot,ph,pfh)=>{
         const result=(parseFloat(pot)*1000/(720*0.79751092507001))+( parseFloat(ph)*5/24)+( parseFloat(pfh)*19/24);
         return result;
@@ -25,14 +36,18 @@ export default function Ofertas(){
    }
    const getSeriesFactor=(fechas,results,calcOperation)=>{
         let series=[];
-        console.log(res.response);
+        const size=fechas.length;
+        let initArray=[];
+        for(let i=0;i<size;i++){
+            initArray.push(null);
+        }
         res.response.forEach((el)=>{
             series=[...series,{
                 name:el.e_nombre,
-                data:[]
+                data:new Array(initArray)
             }]
         });
-        fechas.forEach((el)=>{
+        fechas.forEach((el,index)=>{
             results.forEach((item)=>{
                 const date=new Date(item.fecha_mensual);
             const month=date.getMonth()+1; 
@@ -43,7 +58,7 @@ export default function Ofertas(){
                 if(fecha===el){
                     series=series.map(empresa=>{
                         if(empresa.name===obj.e_nombre){
-                            empresa.data.push(mono);
+                            empresa.data[index]=mono;
                         }
                         return empresa;
                     })
@@ -53,7 +68,7 @@ export default function Ofertas(){
         series.forEach((el,i)=>{
             let newData=[]
             el.data.forEach((item,index)=>{
-                index===0?newData.push(1):newData.push(item/el.data[index-1]);
+                item===null && index===0?newData.push(null):item!==null && index===0?newData.push(1):el.data[index-1]!==null?newData.push(item/el.data[index-1]):newData.push(1);
             });
             series[i].data=newData;
         });
@@ -62,14 +77,20 @@ export default function Ofertas(){
    }
    const getSeries=(fechas,results,calcOperation)=>{
         let series=[];
-        console.log(res.response);
+
+        const size=fechas.length;
+        let initArray=[];
+      
+        for(let i=0;i<size;i++){
+            initArray.push(null);
+        };
         res.response.forEach((el)=>{
             series=[...series,{
                 name:el.e_nombre,
-                data:[]
+                data:new Array(initArray)
             }]
         });
-        fechas.forEach((el)=>{
+        fechas.forEach((el,index)=>{
             results.forEach((item)=>{
                 const date=new Date(item.fecha_mensual);
             const month=date.getMonth()+1; 
@@ -80,21 +101,21 @@ export default function Ofertas(){
                     series=series.map(empresa=>{
                         const obj=res.response.find(dat=>dat.pro_id===item.propuesta_pro_id);
                         if(empresa.name===obj.e_nombre){
-                            empresa.data.push(mono);
+                            empresa.data[index]=mono;
                         }
                         return empresa;
                     })
                 }
             });
         });
-        console.log(series);
+        //
+  
         return series;
    }
    const getFechaList=(results)=>{
         let meses=[];
         
         results.forEach((el)=>{
-            //fecha format
             const date=new Date(el.fecha_mensual);
             const month=date.getMonth()+1; 
             const year=date.getFullYear();
@@ -102,8 +123,6 @@ export default function Ofertas(){
             if(!meses.find(mes=>mes===fecha)){
                 meses=[...meses,fecha]
             }
-            // end
-            
         })
         
         meses.sort((a,b)=>{
@@ -127,10 +146,10 @@ export default function Ofertas(){
                 }
             }
         })
-        console.log(meses);
+    
         return meses;
    }
-   const loadChart=async(url2,containerName,title,subTitle,getFecha,getSerie,calcOp)=>{
+   const loadChart=async(name,url2,containerName,title,subTitle,getFecha,getSerie,calcOp)=>{
        const results=await methodGetReturn(url2);
        let categories=getFecha(results);
       
@@ -151,25 +170,32 @@ export default function Ofertas(){
                     text: `${subTitle}`
                 }
             },
-            series
-        });      
+            series,
+            credits:{
+                enabled:false
+            }
+        });
+        
+        setButton({
+            ...button,
+            [name]:true
+        });
+          
    }
+   
 useEffect(()=>{
     const user=JSON.parse(localStorage.getItem("user"));
     let url=`propuesta/showProps/${user.us_id}`;
     methodGet(url);
+   
     
 },[]);
-const downloadExcel=async()=>{
-    try{
-
-        const response=await methodGetReturn(`propuesta/downloadExcel/${idLicitacion}`);
-        console.log(response);
-        
-    }catch(err){
-        console.log("ERROR CATCH",err);
-    }
-
+const closeChart=(id,name)=>{
+    setButton({
+        ...button,
+        [name]:false
+    });
+    document.getElementById(id).innerHTML="";
 }
     return(
         <Layout>
@@ -178,7 +204,7 @@ const downloadExcel=async()=>{
                 <div>
                     <table>
                         <thead>
-                            <tr>
+                            <tr className="bg-blue-200" >
                                 <th>pro_id</th>
                                 <th>pro_fecha</th>
                                 <th>pro_auditada</th>
@@ -193,7 +219,7 @@ const downloadExcel=async()=>{
                             {res.response.map((el)=>(
                                 <tr key={el.pro_id}>
                                     <td>{el.pro_id}</td>
-                                    <td>{el.pro_fecha}</td>
+                                    <td>{getFormatDate(el.pro_fecha)}</td>
                                     <td>{el.pro_auditada}</td>
                                     <td>{el.pro_adjudicada}</td>
                                     <td>{el.e_id}</td>
@@ -208,21 +234,55 @@ const downloadExcel=async()=>{
             </section>
             <section>
                 <h2>Gráficos de ofertas</h2>
-                <button onClick={()=>loadChart(url2,"container","Precios monomicos","Valor de precios",getFechaList,getSeries,monomicoCalc)} >Ver gráficos</button>
-                <h3>Precios monomicos ofertados</h3>
+                {
+                    button.preciosMonomicos?
+                    <button onClick={()=>{closeChart("container","preciosMonomicos")}} >Cerrar</button>
+                    :
+<button onClick={()=>loadChart("preciosMonomicos",`propuesta/propEco/${login.user.li_id}`,"container","Precios monomicos","Valor de precios",getFechaList,getSeries,monomicoCalc)} >Ver gráfico de precios monómicos</button>
+                }
+                
                 <aside id="container" >     
                 </aside>
-                <a href={`${API}/propuesta/downloadExcel/${idLicitacion}`} download="Propuesta_economica.xslx" >Descargar informe en excel</a>
-                <button onClick={()=>loadChart(url2,"potencia","Precios ofertados de potencia","Valor de los precios",getFechaList,getSeries,getSeriesPotencia)} >Ver gráfico de potencia</button>
+                <a href={`${API}/propuesta/downloadExcel/${login.user.li_id}`} download="Propuesta_economica.xslx" >Descargar informe en excel</a>
+                {
+                    button.preciosPotencia?
+                    <button onClick={()=>closeChart("potencia","preciosPotencia")} >Cerrar</button>
+                    :
+                <button onClick={()=>loadChart("preciosPotencia",`propuesta/propEco/${login.user.li_id}`,"potencia","Precios ofertados de potencia","Valor de los precios",getFechaList,getSeries,getSeriesPotencia)} >Ver gráfico de potencia</button>
+                }
                 <aside id="potencia"></aside>
-                <button onClick={()=>loadChart(url2,"energia","Precios de energía","Valor de preios",getFechaList,getSeries,getSeriesEnergia)  } >Ver gráfico de energía</button>
+                {button.preciosEnergia?
+                <button onClick={()=>closeChart("energia","preciosEnergia")} >Cerrar</button>
+                :
+                <button onClick={()=>loadChart("preciosEnergia",`propuesta/propEco/${login.user.li_id}`,"energia","Precios de energía","Valor de preios",getFechaList,getSeries,getSeriesEnergia)  } >Ver gráfico de energía</button>
+                }
                 <aside id="energia"></aside>
-                <button onClick={()=>loadChart(url2,"factorPotencia","Factor de actualización de potencia","Valor del factor",getFechaList,getSeriesFactor,getSeriesPotencia)} >Ver factor de actualizacion de potencia</button>
+                {button.factorActPot?
+                <button onClick={()=>closeChart("factorPotencia","factorActPot")} >Cerrar</button>
+                :
+                <button onClick={()=>loadChart("factorActPot",`propuesta/propEco/${login.user.li_id}`,"factorPotencia","Factor de actualización de potencia","Valor del factor",getFechaList,getSeriesFactor,getSeriesPotencia)} >Ver factor de actualizacion de potencia</button>
+                }
                 <aside id="factorPotencia"></aside>
-                <button onClick={()=>loadChart(url2,"factorEnergia","Factor de actualización de precios de energía","Valor del factor",getFechaList,getSeriesFactor,getSeriesEnergia)} >Ver factor de actualizacion de energia</button>
+                {button.factorActEner?
+                <button onClick={()=>closeChart("factorEnergia","factorActEner")} >Cerrar</button>
+                :
+                <button onClick={()=>loadChart("factorActEner",`propuesta/propEco/${login.user.li_id}`,"factorEnergia","Factor de actualización de precios de energía","Valor del factor",getFechaList,getSeriesFactor,getSeriesEnergia)} >Ver factor de actualizacion de energia</button>
+                }
                 <aside id="factorEnergia" ></aside>
+                <aside id="test" ></aside>
             </section>
             <style jsx>{`
+            a{
+                padding:0.5rem 1rem;
+                background-color:green;
+                color:white;
+            }
+            button{
+                background-color:black;
+                color:white;
+                padding:0.5rem 1rem;
+                margin:0.5rem 0;
+            }
             section{
                 width:100%;
                 display:flex;

@@ -4,7 +4,7 @@ import { API } from "../tools/api";
 import axios from "axios";
 
 export default function Tables({res}){
-    console.log(res);
+    
     return(
         <Layout>
             <section>

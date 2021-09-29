@@ -27,9 +27,9 @@ export const useMethod=(initial)=>{
             return false;
         }
     }
-    const methodLogin=async(form)=>{
+    const methodLogin=async(url,form)=>{
         try{
-            const response=await axios.post(`${API}/user/login`,form);
+            const response=await axios.post(`${API}${url}`,form);
             const data=await response.data;
             if(data[0].err){
                 setRes({

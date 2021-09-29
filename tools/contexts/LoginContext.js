@@ -3,20 +3,26 @@ import axios from "axios";
 import { API } from "../api";
 
 const LoginContext=createContext();
-const initialLogin={user:"",isLogin:false};
+const initialLogin={user:false,isLogin:false,
+empresa:false};
 export const LoginProvider=({children})=>{
     const [login, setLogin] = useState(initialLogin);
     useEffect(()=>{
-     const value=localStorage.getItem("user")?{user:JSON.parse(localStorage.getItem("user")), isLogin:true}:{user:"",isLogin:false};
+     const value=localStorage.getItem("user")?{user:JSON.parse(localStorage.getItem("user")), isLogin:true, empresa:false}:localStorage.getItem("empresa")?
+     {user:false,empresa:JSON.parse(localStorage.getItem("empresa")), isLogin:true}:initialLogin;
         setLogin(value);
     },[])
     const logout=async()=>{
         try{
-            const res=await axios.put(`${API}/user/${login.user.us_id}`,{us_estado:"0"});
-            localStorage.removeItem("user");
+            if(login.user){
+                const res=await axios.put(`${API}/user/${login.user.us_id}`,{us_estado:"0"});
+                localStorage.removeItem("user");
+            }else{
+                localStorage.removeItem("empresa");
+            }
             setLogin(initialLogin);
         }catch(err){
-            console.log(err);
+            console.log("ERROR LOGOUT CATCH ",err);
         }
     }
     const data={

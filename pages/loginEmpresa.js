@@ -1,89 +1,84 @@
 import Layout from "../components/layout";
-import Link from "next/link";
-import { useEffect } from "react";
-import { useForm } from "../hooks/useForm"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faUser} from "@fortawesome/free-regular-svg-icons";
-import {faUser as farUser,faKey} from "@fortawesome/free-solid-svg-icons";
+import {faBuilding, faKey} from "@fortawesome/free-solid-svg-icons";
+import {faBuilding as farBuilding} from "@fortawesome/free-regular-svg-icons";
+import { useForm } from "../hooks/useForm";
 import { useMethod } from "../hooks/useMethod";
 import { useLoginContext } from "../tools/contexts/LoginContext";
-import Profile from "../components/profile";
+import { useEffect } from "react";
+import ProfileEmpresa from "../components/profileEmpresa";
 const initialForm={
-    us_login:"",
-    us_pass:""
+    e_login:"",
+    e_pass:""
 }
 const initialMethod={
     message:"",
     response:""
 }
-export default function Login(){
-    const {form,handleChange}=useForm(initialForm);
-    const {res,methodLogin,methodGetReturn}=useMethod(initialMethod);
-    const {login,setLogin,logout}=useLoginContext();
+export default function loginEmpresa(){
+    const{form,handleChange}= useForm(initialForm);
+    const{res,methodLogin,methodGetReturn}=useMethod(initialMethod);
+    const{login,setLogin,logout}= useLoginContext();
     const initLogin=(e)=>{
         e.preventDefault();
-        methodLogin("/user/login",form);
-        
+        methodLogin("/empresa/login",form);
     }
     const requestLogin=async()=>{
-        let url=`user/getLicitacion/${res.response[0].us_id}`;
-        const response=await methodGetReturn(url);
+        const idLici=await methodGetReturn(`propuesta/getLicitacion/${res.response[0].propuesta_pro_id}`);
+
         let data=res.response[0];
-        data={...data,li_id:response[0]? response[0].li_id:0}
-        localStorage.setItem("user",JSON.stringify(data));
+         data={...data,li_id:idLici[0]?idLici[0].li_id:0};
+            localStorage.setItem("empresa",JSON.stringify(data));
             setLogin({
-                empresa:false,
-                user:data,
+                user:false,
+                empresa:data,
                 isLogin:true
             })
     }
-    useEffect(() => {
+    useEffect(()=>{
         if(res.response!==""){
             requestLogin();
         }
-    }, [res])
-    
+    },[res]);
+ 
     return(
         <Layout>
-
-        <section>
-            <h2>{res.message}</h2>
-            {login.isLogin?
-            <div className="container-after-login" >
-                <Profile user={login.user} />
+            <section>
+                <h2>{res.message}</h2>
+               {login.isLogin?
+                <div className="container-after-login" >
+                    <ProfileEmpresa empresa={login.empresa} />
                 
                 <button onClick={logout} >Logout</button>
             </div>
-            :
-            <>
-            <h1>Senergy</h1>
-            
-            <form onSubmit={initLogin}>
-                <article>
-                <span className="container-first-icon" >
-                    <FontAwesomeIcon color="white" icon={faUser} />
-                </span>
-                </article>
-                <h2>Sección de login para usuarios</h2>
-                <div className="container-input-login" >
-                    <span className="container-icon-input" >
+               :
+               <>
+                <h1>Senergy</h1>
+                <form onSubmit={initLogin}>
+                    <article>
+                        <span className="container-first-icon" >
+                        <FontAwesomeIcon size="2x" color="white" icon={farBuilding} />
+                        </span>
+                    </article>
+                    <h2>Seccion de login para empresas</h2>
+                    <div className="container-input-login">
+                        <span className="container-icon-input" >
+                            <FontAwesomeIcon color="rgba(0,0,0,0.4)" size="lg" icon={faBuilding} />
+                        </span>
+                        <input name="e_login" value={form.e_login} onChange={handleChange} placeholder="Login" type="text"/>
+                    </div>
+                    <div className="container-input-login">
+                        <span className="container-icon-input" >
+                            <FontAwesomeIcon color="rgba(0,0,0,0.4)" size="lg" icon={faKey} />
+                        </span>
+                        <input onChange={handleChange} name="e_pass" value={form.e_pass} placeholder="Password" type="password"/>
+                    </div>
+                    <button type="submit" >Login</button>
+                </form>
+               </>
+               } 
 
-                <FontAwesomeIcon color="rgba(0,0,0,0.4)"  size="lg" icon={farUser} />
-                    </span>
-                <input onChange={handleChange} value={form.us_login} name="us_login" placeholder="Username" type="text"/>
-                </div>
-                <div className="container-input-login" >
-                    <span className="container-icon-input" >
-
-                <FontAwesomeIcon color="rgba(0,0,0,0.4)" size="lg" icon={faKey} />
-                    </span>
-                <input onChange={handleChange} value={form.us_pass} name="us_pass" placeholder="Password" type="password"/>
-                </div>
-                <button type="submit">Login</button>
-            </form>
-            </>
-            }
-        </section>
+            </section>
             <style jsx>{`
             .container-input-login{
                 background-color:white;
@@ -94,11 +89,11 @@ export default function Login(){
             .container-first-icon{
                 border-radius:50%;
                 background-color:black;
+                padding:1rem;
                 display:flex;
                 justify-content:center;
                 align-items:center;
-                width:2rem;
-                height:2rem;
+               
             }
             article{
                 display:flex;

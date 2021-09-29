@@ -1,25 +1,29 @@
 import axios from "axios";
 import { useRouter } from "next/dist/client/router";
 import Layout from "../../components/layout";
-import {useForm} from "../../hooks/useForm";
 import {useMethod} from "../../hooks/useMethod";
-
+import { getDateFormat } from "../../tools/tools";
 import { API } from "../../tools/api";
-const initialForm={
-    pro_id:0
-}
+import { useLoginContext } from "../../tools/contexts/LoginContext";
 const initialMethod={
     message:"",
     response:""
 }
 export default function Licitacion({resp}){
-    const {form,handleChange}=useForm(initialForm);
+     const {login,setLogin}= useLoginContext()
     const {res,methodPut}=useMethod(initialMethod);
     const router=useRouter();
     const startLicitacion=()=>{
-        let url=`propuesta/${form.pro_id}`;
+        let url=`propuesta/${login.empresa.propuesta_pro_id}`;
         methodPut(url,{
             Licitacion_li_id:resp[0].li_id
+        });
+        setLogin({
+            ...login,
+            empresa:{
+                ...login.empresa,
+                li_id:resp[0].li_id
+            }
         });
     }
     if(router.isFallback){
@@ -33,17 +37,17 @@ export default function Licitacion({resp}){
                 <h3>{resp[0].li_id}</h3>
                 <h3>{resp[0].li_nombre}</h3>
                 <h3>{resp[0].li_descripcion}</h3>
-                <h3>{resp[0].li_fecha_apertura}</h3>
-                            <h3>{resp[0].li_fecha_fin_apertura}</h3>
-                            <h3>{resp[0].li_fecha_inicio_oferta}</h3>
-                            <h3>{resp[0].li_fecha_fin_oferta}</h3>
-                            <h3>{resp[0].li_fecha_inicio_auditoria}</h3>
-                            <h3>{resp[0].li_fecha_fin_auditoria}</h3>
-                            <h3>{resp[0].li_fecha_adjudicacion}</h3>
-                            <h3>{resp[0].li_fecha_inicio_vigencia}</h3>
-                            <h3>{resp[0].li_fecha_fin_vigencia}</h3>
+                <h3>{getDateFormat(resp[0].li_fecha_apertura)}</h3>
+                            <h3>{getDateFormat(resp[0].li_fecha_fin_apertura)}</h3>
+                            <h3>{getDateFormat(resp[0].li_fecha_inicio_oferta)}</h3>
+                            <h3>{getDateFormat(resp[0].li_fecha_fin_oferta)}</h3>
+                            <h3>{getDateFormat(resp[0].li_fecha_inicio_auditoria)}</h3>
+                            <h3>{getDateFormat(resp[0].li_fecha_fin_auditoria)}</h3>
+                            <h3>{getDateFormat(resp[0].li_fecha_adjudicacion)}</h3>
+                            <h3>{getDateFormat(resp[0].li_fecha_inicio_vigencia)}</h3>
+                            <h3>{getDateFormat(resp[0].li_fecha_fin_vigencia)}</h3>
                             <h3>{resp[0].li_nrocontrato}</h3>
-                            <h3>{resp[0].li_fecha_creacionlicitacion}</h3>
+                            <h3>{getDateFormat(resp[0].li_fecha_creacionlicitacion)}</h3>
                             <h3>{resp[0].puntos_suministro_medicion}</h3>
                             <h3>{resp[0].barra_referencia_generacion}</h3>
                             <h3>{resp[0].factor_planta}</h3>
@@ -52,8 +56,14 @@ export default function Licitacion({resp}){
                             <h3>{resp[0].tipo_contrato_ti_id}</h3>
                             <h3>{resp[0].servicio_se_id}</h3>
                             <h3>{resp[0].propuesta_economica_pe_id}</h3>
-                            <input onChange={handleChange} value={form.pro_id} name="pro_id" placeholder="ID de empresa" type="number"/>
+                            {
+                                login.empresa.li_id===resp[0].li_id?
+                                <h2>Ya se encuentra participando de esta licitación</h2>
+                                : login.user.li_id?
+                                <></>
+                                :
                             <button onClick={startLicitacion} >Participar de la licitacion</button>
+                            }
             </section>
             <style jsx>{`
             button{

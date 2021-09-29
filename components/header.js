@@ -1,23 +1,48 @@
 import Link from "next/link";
+import { useLoginContext } from "../tools/contexts/LoginContext";
 
 export default function Header(){
+    const {login}=useLoginContext();
     return(
         <header>
-            <Link href="/">
-            <a >Inicio</a>
+            {!login.isLogin?
+            <>   
+            <Link href="/login">
+            <a className="link-element" >Usuario login</a>
             </Link>
+            <Link href="/" >
+            <a>Inicio</a>
+            </Link>
+            <Link href="/loginEmpresa">
+            <a className="link-element" >Empresa login</a>
+            </Link>
+            </>
+            :
+            <> 
+            {login.empresa?
+            <></>
+            :
             <Link href="/crearLicitacion">
             <a>Crear licitacion</a>
             </Link>
+             }
             <Link href="/tables" >
             <a >Tablas</a>
             </Link>
-            <Link href="/login">
-                <a>Login</a>
+            {login.empresa?
+            <Link href="/loginEmpresa">
+                <a>Perfil</a>
             </Link>
+            :
+            <Link href="/login">
+                <a>Perfil</a>
+            </Link>
+            }
             <Link href="/licitacion" >
             <a >Licitaciones</a>
             </Link>
+            </>
+            }
             <style>{`
             header{
                 top:0;
@@ -28,8 +53,15 @@ export default function Header(){
                 padding:1rem;
                 display:flex;
                 justify-content:space-evenly;
+                align-items:center;
                 background-color:white;
                 box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.2);
+            }
+            .link-element{
+                border:0.1rem solid black;
+                padding: 0.5rem 1rem;
+                font-weight:700;
+                border-radius:1.5rem;
             }
 
             `}</style>

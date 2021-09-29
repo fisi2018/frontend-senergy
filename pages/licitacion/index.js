@@ -2,16 +2,22 @@ import axios from "axios";
 import Layout from "../../components/layout";
 import Link from "next/link";
 import { API } from "../../tools/api";
+import { useLoginContext } from "../../tools/contexts/LoginContext";
+import { getDateFormat } from "../../tools/tools";
 export default function Licitaciones({res}){
-
+    const {login}= useLoginContext();
+    
     return(
         <Layout>
             <section>
                 <h1>Licitaciones disponibles</h1>
+                <h2>En esta sección podrá visualizar todas las licitaciones disponibles, y si es una empresa proveedora podrá participar de alguna de ellas.
+                </h2>
+                <p>Nota: La licitación resaltada es a la que se encuentra afiliado, ya sea como creador de la licitación o como participante de esta.</p>
                 <div>
                     <table>
                         <thead>
-                            <tr>
+                            <tr className="bg-blue-200" >
 
                             <th>li_id</th>
                             <th>li_nombre</th>
@@ -39,7 +45,7 @@ export default function Licitaciones({res}){
                         </thead>
                         <tbody>
                             {res.data.map((el)=>(
-                                <tr key={el.li_id}>
+                                <tr className={`${(!login.user && login.empresa.li_id===el.li_id) || (!login.empresa && login.user.li_id===el.li_id) ?"bg-blue-200":""}`}  key={el.li_id}>
                                     <td>
                                         <Link href={`/licitacion/[id]`} as={`/licitacion/${el.li_id}`}>
                                         <a>
@@ -49,17 +55,17 @@ export default function Licitaciones({res}){
                                         </td>
                                     <td>{el.li_nombre}</td>
                             <td>{el.li_descripcion}</td>
-                            <td>{el.li_fecha_apertura}</td>
-                            <td>{el.li_fecha_fin_apertura}</td>
-                            <td>{el.li_fecha_inicio_oferta}</td>
-                            <td>{el.li_fecha_fin_oferta}</td>
-                            <td>{el.li_fecha_inicio_auditoria}</td>
-                            <td>{el.li_fecha_fin_auditoria}</td>
-                            <td>{el.li_fecha_adjudicacion}</td>
-                            <td>{el.li_fecha_inicio_vigencia}</td>
-                            <td>{el.li_fecha_fin_vigencia}</td>
+                            <td>{getDateFormat(el.li_fecha_apertura)}</td>
+                            <td>{getDateFormat(el.li_fecha_fin_apertura)}</td>
+                            <td>{getDateFormat(el.li_fecha_inicio_oferta)}</td>
+                            <td>{getDateFormat(el.li_fecha_fin_oferta)}</td>
+                            <td>{getDateFormat(el.li_fecha_inicio_auditoria)}</td>
+                            <td>{getDateFormat(el.li_fecha_fin_auditoria)}</td>
+                            <td>{getDateFormat(el.li_fecha_adjudicacion)}</td>
+                            <td>{getDateFormat(el.li_fecha_inicio_vigencia)}</td>
+                            <td>{getDateFormat(el.li_fecha_fin_vigencia)}</td>
                             <td>{el.li_nrocontrato}</td>
-                            <td>{el.li_fecha_creacionlicitacion}</td>
+                            <td>{getDateFormat(el.li_fecha_creacionlicitacion)}</td>
                             <td>{el.puntos_suministro_medicion}</td>
                             <td>{el.barra_referencia_generacion}</td>
                             <td>{el.factor_planta}</td>
@@ -76,6 +82,12 @@ export default function Licitaciones({res}){
                 </div>
             </section>
             <style jsx>{`
+            a{
+                text-decoration:underline;
+            }
+            p{
+                margin:1rem 0;
+            }
             section{
                 width:100%;
                 padding:1rem;
@@ -90,6 +102,12 @@ export default function Licitaciones({res}){
             }
             table,td,th{
                  border:1px solid rgba(0,0,0,0.2);
+            }
+            h1{
+                font-size:2rem;
+            }
+            h2{
+                font-size:1rem;
             }
             div{
                 max-width:100%;
