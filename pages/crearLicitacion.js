@@ -51,9 +51,10 @@ export default function CrearLicitacion({data,err}){
                     ...login.user,
                     li_id:res.response.idLicitacion
                 }
-            })
+            });
         }
     },[res]);
+  
     return(
         <Layout>
             <section>

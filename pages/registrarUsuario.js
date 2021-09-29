@@ -25,25 +25,26 @@ const initialForm={
 }
 const initialMethod={
     message:"",
-    response:""
+    response:[]
 }
 export default function RegistrarUsuario({data,err}){
-    console.log("client side",API);
+    
     const {form,handleChange}=useForm(initialForm);
     const {res,methodPost}=useMethod(initialMethod);
     const router= useRouter();
     const sendForm=(e)=>{
         e.preventDefault();
+        
         const url=`/user/createUser`;
         methodPost(url,form);
         router.push("/login");
     }
-    console.log(res);
+    
     return(
         <Layout>
             <section>
                 <h2>Registrar usuario</h2>
-                <p>{res}</p>
+                
                 <form onSubmit={sendForm}>
                     <input onChange={handleChange} name="us_login" value={form.us_login} placeholder="Login" type="text"/>
                     <input onChange={handleChange} name="us_pass" value={form.us_pass} placeholder="Password" type="password"/>
@@ -113,7 +114,7 @@ export default function RegistrarUsuario({data,err}){
 }
 export async function getServerSideProps(){
     try{
-        console.log("API",API);
+      
         const responseTipoUsuario= await axios.get(`${API}/user/tipo_usuario`);
         const tiposUsuario=await responseTipoUsuario.data;
         const responseRolUsuario= await axios.get(`${API}/user/rol_usuario`);

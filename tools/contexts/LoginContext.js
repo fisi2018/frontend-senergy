@@ -11,7 +11,15 @@ export const LoginProvider=({children})=>{
      const value=localStorage.getItem("user")?{user:JSON.parse(localStorage.getItem("user")), isLogin:true, empresa:false}:localStorage.getItem("empresa")?
      {user:false,empresa:JSON.parse(localStorage.getItem("empresa")), isLogin:true}:initialLogin;
         setLogin(value);
-    },[])
+    },[]);
+    useEffect(()=>{
+        if(!login.empresa && login.isLogin){
+            localStorage.setItem("user",JSON.stringify(login.user));
+        }else{
+            if(!login.user && login.isLogin)
+            localStorage.setItem("empresa",JSON.stringify(login.empresa));
+        }
+    },[login]);
     const logout=async()=>{
         try{
             if(login.user){

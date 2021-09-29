@@ -1,8 +1,6 @@
 import Layout from "../components/layout";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faUser,faBuilding} from "@fortawesome/free-solid-svg-icons";
-import {} from "@fortawesome/free-regular-svg-icons";
-import {API} from "../tools/api";
 import Link from "next/link";
 export default function Home(){
     

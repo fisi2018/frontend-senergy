@@ -1,9 +1,11 @@
+import axios from "axios";
 import { useEffect } from "react";
 import Layout from "../components/layout";
 import { useForm } from "../hooks/useForm";
 import { useMethod } from "../hooks/useMethod";
 import { useLoginContext } from "../tools/contexts/LoginContext";
 import { getDateFormat } from "../tools/tools";
+import { API } from "../tools/api";
 const initialMethod={
     message:"",
     response:[]
@@ -20,9 +22,15 @@ export default function PropuestaEco(){
     const {login} = useLoginContext();
     const {res,methodGet}=useMethod(initialMethod);
     const {form,handleChange}=useForm(initialForm);
-    const sendProp=(e)=>{
+    const sendProp=async(e)=>{
         e.preventDefault();
-        
+        try{
+            const response=await axios.post(`${API}/propuesta_economica_historial/createPropuesta/${login.empresa.propuesta_pro_id}`,form);
+            const data=await response.data;
+            
+        }catch(err){
+            console.log(err);
+        }
     }
     useEffect(()=>{
         if(login.empresa){

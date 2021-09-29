@@ -59,7 +59,7 @@ export default function Licitacion({resp}){
                             {
                                 login.empresa.li_id===resp[0].li_id?
                                 <h2>Ya se encuentra participando de esta licitación</h2>
-                                : login.user.li_id?
+                                : login.user?
                                 <></>
                                 :
                             <button onClick={startLicitacion} >Participar de la licitacion</button>
