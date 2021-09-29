@@ -17,7 +17,7 @@ export default function Licitaciones({res}){
                 <div>
                     <table>
                         <thead>
-                            <tr className="bg-blue-200" >
+                            <tr className="bg-gray-300" >
 
                             <th>li_id</th>
                             <th>li_nombre</th>
