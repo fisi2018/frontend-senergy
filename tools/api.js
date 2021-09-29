@@ -1,1 +1,1 @@
-export const API=process.env.HOST;
+export const API=process.env.API_URL;
